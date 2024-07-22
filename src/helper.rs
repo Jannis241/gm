@@ -1,6 +1,6 @@
 pub fn print_list_help() {
     println!("");
-    println!("Usage: gm list
+    println!("Usage: gm list / ls
 
 List all of your downloaded directory from your project directory.");
 }
@@ -10,10 +10,17 @@ pub fn print_general_help() {
     println!("Usage: gm <command> [<args>]
 
 Available commands:
-    upload       Upload changes to a git repository
-    upload all   Upload all known repositories to git
-    list         List all downloaded repositories in your project directory
-    --help       Show help about a specific command");
+    upload          Upload changes to a git repository
+    upload all      Upload all known repositories to git
+    download        Download a specific repository from a user
+    download all    Download all repositories from a user
+    list            List all downloaded repositories in your project directory
+    --help          Show help about a specific command
+
+    For more info see gm <command> --help    
+");
+
+    
 }
 pub fn print_upload_all_help() {
     println!("");

@@ -7,6 +7,7 @@ pub fn create_tokens(input: &Input) -> Vec<Arguement> {
             "update" => Arguement::UPDATE,
             "migrate" => Arguement::MIGRATE,
             "list" => Arguement::LIST,
+            "ls" => Arguement::LIST,
             "--help" => Arguement::HELP,
             "download" => Arguement::DOWNLOAD, 
             "create" => Arguement::CREATE,
