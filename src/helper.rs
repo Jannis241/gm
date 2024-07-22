@@ -17,7 +17,7 @@ Available commands:
     list            List all downloaded repositories in your project directory
     --help          Show help about a specific command
 
-    For more info see gm <command> --help    
+    For more info see 'gm <command> --help'
 ");
 
     

@@ -21,11 +21,6 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
         return Ok(())
     }
     
-    // too many parameters error
-    // error fixxen dass nicht name("jsdfjsdf") kommt
-    // help verbessern
-    // private repo download testn
-
     // Command-Verarbeitung
     match &tokens[..] {
         // help

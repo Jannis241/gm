@@ -85,6 +85,11 @@ pub fn find_git_repos(path: &Path) -> Vec<PathBuf> {
     git_repos
 }
 
+pub fn get_repos_from_user(username: &String, api_key: Option<String>){
+    // if api key -> wants to list own repos so also private
+    // else 
+}
+
 pub async fn clone_all_repos(username: &str, token: Option<String>, target_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     // Erstelle den Client    
     let client = reqwest::Client::new();
@@ -166,6 +171,7 @@ pub fn print_repo_list(repo_paths: &Vec<String>) {
         
         println!("{}{}", cleanPathSplit[0..cleanPathSplit.len() - 2].join("").italic(), cleanPathSplit.last().unwrap().blue().italic().bold());
     }
+    println!("")
 }
 
 
