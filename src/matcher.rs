@@ -35,6 +35,9 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
         [Arguement::UPLOAD, Arguement::HELP] => {
             helper::print_upload_help();
         },
+        [Arguement::DOWNLOAD, Arguement::ALL, Arguement::HELP] => {
+            print_download_all_help();
+        }
         [Arguement::DOWNLOAD, Arguement::ALL, Arguement::FROM, Arguement::NAME(ref name)] => {
             let mut key = None;
             if &&user_config.username == &name {

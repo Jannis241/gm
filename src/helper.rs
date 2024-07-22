@@ -59,3 +59,14 @@ Extra Info:
 
 
 }
+
+pub fn print_download_all_help() {
+    println!("");
+    println!("Usage: gm download all from <name>
+
+Examples:
+    gm download all from user_name
+
+Extra Info:
+    - Make sure you have your API key configured if you are downloading your own repositories.");
+}

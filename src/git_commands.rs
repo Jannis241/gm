@@ -96,6 +96,7 @@ pub async fn clone_all_repos(username: &str, token: Option<String>, target_path:
     let mut request = client.get(&url).header("User-Agent", "rust-github-client");
 
     if let Some(token) = token {
+        println!("Getting authorization with api-key...");
         let auth_value = format!("token {}", token);
         request = request.header(header::AUTHORIZATION, auth_value);
     }
