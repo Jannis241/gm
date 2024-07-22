@@ -70,3 +70,12 @@ Examples:
 Extra Info:
     - Make sure you have your API key configured if you are downloading your own repositories.");
 }
+
+
+pub fn print_download_help() {
+    println!("");
+    println!("Usage: gm download <repo_name> from <user_name>
+
+Examples:
+    gm download random_repo from my_friend");
+}
