@@ -23,7 +23,7 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
     
     // Command-Verarbeitung
     match &tokens[..] {
-        // help
+        // help 
         [Arguement::LIST, Arguement::HELP] => {
             helper::print_list_help();
         }
@@ -40,6 +40,7 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
         }
         
         // commands
+        [Arguement::CLEAR] => terminal::clear_terminal(),
         [Arguement::LIST] => {
             // update repo list, names, and path in case a repo got added or deleted
             git_commands::update_repos(&mut repo_list, &mut repo_names_list, &mut repo_path_list, &user_config);

@@ -20,6 +20,8 @@ pub fn create_tokens(input: &Input) -> Vec<Arguement> {
             "private" => Arguement::PRIVACY("private".to_string()),
             "save" => Arguement::SAVE,
             "from" => Arguement::FROM,
+            "cls" => Arguement::CLEAR,
+            "clear" => Arguement::CLEAR,
             other => {
                 if other.starts_with("--branch=") {
                     Arguement::BRANCH(other["--branch=".len()..].to_string())
