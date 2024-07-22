@@ -1,9 +1,7 @@
 #![allow(non_snake_case)]
 #![allow(unused)]
 use crate::*;
-use std::io::stdin;
-use std::io;
-use std::io::Write;
+
 pub fn throw_error(msg: &str){
     println!("{}: {}", "gm", msg)
 }

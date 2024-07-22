@@ -1,10 +1,3 @@
-use core::arch;
-use std::{env::consts::ARCH, f32::consts::E, process::exit};
-use git_commands::{find_file_in_path, upload, SearchError};
-use terminal::throw_error;
-use std::env;
-use std::path::PathBuf;
-
 use crate::*;
 pub fn identify_pattern(tokens: Vec<Arguement>, input: Input) {
     // Initialisiere Konfiguration

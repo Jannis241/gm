@@ -1,17 +1,33 @@
 #![allow(non_snake_case)]
 #![allow(unused)]
 
-use std::env;
 use std::collections::btree_map::Range;
-use std::io::{self, ErrorKind, Write}; 
-use std::fs::{self, File, OpenOptions}; 
-use std::path::{Path, PathBuf, MAIN_SEPARATOR};
-use colored::*; 
-use reqwest::header::ValueDrain;
-use serde::{Serialize, Deserialize};
-use reqwest::{header, Error};
+use std::env;
+use std::fs::{self, File, OpenOptions};
+use std::io::{self, ErrorKind, Write};
+use std::path::{MAIN_SEPARATOR, Path, PathBuf};
 use std::process::{exit, Command};
-use colored::*; 
+
+use colored::*;
+use reqwest::header::{self, ValueDrain};
+use reqwest::Error;
+use serde::{Deserialize, Serialize};
+
+// Declare the modules
+pub mod config_manager;
+pub mod git_commands;
+pub mod helper;
+pub mod lexer;
+pub mod matcher;
+pub mod terminal;
+
+// Optionally, re-export items for easier access in other parts of the crate
+pub use config_manager::*;
+pub use git_commands::*;
+pub use helper::*;
+pub use lexer::*;
+pub use matcher::*;
+pub use terminal::*;
 
 
 

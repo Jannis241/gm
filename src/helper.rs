@@ -1,4 +1,3 @@
-
 pub fn print_list_help() {
     println!("");
     println!("Usage: gm list

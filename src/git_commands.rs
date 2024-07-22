@@ -1,17 +1,4 @@
 use crate::*;
-use std::path::*;
-use gm::*;
-use std::collections::btree_map::Range;
-use std::env;
-use std::io::{self, Write}; 
-use std::fs::{self, File, OpenOptions}; 
-use std::path::{Path, PathBuf, MAIN_SEPARATOR};
-use std::process::{exit, Command};
-use colored::*; 
-use terminal::*;
-use serde::{Serialize, Deserialize};
-use reqwest::header;
-
 pub fn delete_repo(repoName: &String, api_key: &String){
     println!("The user wants to delete the repo {}", repoName);
 }

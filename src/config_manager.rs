@@ -1,8 +1,4 @@
 use crate::*;
-use std::fs::OpenOptions;
-use std::path::*;
-use std::fs::File;
-use std::io::Write;
 pub fn manage_config() -> Config{
     let config_path = "./config.json";
     let path = Path::new(&config_path);
