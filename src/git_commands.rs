@@ -85,8 +85,8 @@ pub fn find_git_repos(path: &Path) -> Vec<PathBuf> {
     git_repos
 }
 
-pub async fn clone_all_repos(username: &str, token: Option<&str>, target_path: &str) -> Result<(), Box<dyn std::error::Error>> {
-    // Erstelle den Client
+pub async fn clone_all_repos(username: &str, token: Option<String>, target_path: &str) -> Result<(), Box<dyn std::error::Error>> {
+    // Erstelle den Client    
     let client = reqwest::Client::new();
 
     // Erstelle die URL
@@ -108,23 +108,22 @@ pub async fn clone_all_repos(username: &str, token: Option<&str>, target_path: &
         eprintln!("Failed to fetch repos: {}", response.status());
         return Ok(());
     }
-
     // Parste die JSON Antwort
-    let repos: Vec<String> = response.json().await?;
+    let repos: Vec<CloneData> = response.json().await?;
 
     // Klone jedes Repository
     for repo in repos {
         let output = Command::new("git")
             .arg("clone")
-            .arg(&repo)
-            .arg(format!("{}/{}", target_path, extract_repo_name(&repo)))
+            .arg(&repo.clone_url)
+            .arg(format!("{}/{}", target_path, extract_repo_name(&repo.clone_url)))
             .output()
             .expect("Failed to execute git command");
 
         if !output.status.success() {
-            eprintln!("Failed to clone repo: {}", repo);
+            eprintln!("Failed to clone repo: {}", repo.clone_url);
         } else {
-            println!("Successfully cloned: {}", repo);
+            println!("Successfully cloned: {}", repo.clone_url);
         }
     }
 
@@ -210,13 +209,6 @@ pub fn find_file_in_path(path: &str, name: &str) -> Result<String, SearchError> 
     }
 }
 
-
-
-pub fn deleteDir(path: &String){
-    println!("The user wants to delete a folder at: {}", &path)
-}
-
-
 pub fn update_repos(repo_list: &mut Vec<Repository>, repo_names_list: &mut Vec<String>, repo_path_list: &mut Vec<String>, user_config: &Config) {
     // Aktualisiere die Repo-Liste, Namen und Pfade im Falle, dass ein Repo hinzugefügt oder gelöscht wurde
     
@@ -229,34 +221,4 @@ pub fn update_repos(repo_list: &mut Vec<Repository>, repo_names_list: &mut Vec<S
         repo_names_list.push(repo.Name.clone());
         repo_path_list.push(repo.Path.clone());
     }
-}
-
-
-
-pub fn get_commit_msg(args: &Vec<&str>, start: usize) -> String{
-    let mut commit_msg = String::new();
-    let mut force = false;
-
-    for arg in &args[start..] {
-        if arg != &"--force"{
-            commit_msg.push_str(arg);
-            commit_msg.push_str(" ");
-        }
-    }
-    commit_msg = commit_msg.trim().to_string();
-
-    if commit_msg.len() == 0 {
-        commit_msg = "commited by Git-Manager".to_string();
-    }
-
-    commit_msg
-}
-
-pub fn get_force(args: &Vec<&str>) -> bool {
-    for arg in args{
-        if arg == &"--force"{
-            return true;
-        }
-    }
-    return false;
 }

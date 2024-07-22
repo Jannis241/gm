@@ -3,9 +3,11 @@
 
 use gm::*;
 
-fn main(){
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>>{
     let input = Input::get();
     let mut tokens = lexer::create_tokens(&input);
     println!("Tokens: {:?}", tokens);
-    matcher::identify_pattern(tokens, input);
+    matcher::identify_pattern(tokens, input).await?;
+    Ok(())
 }

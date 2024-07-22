@@ -1,5 +1,5 @@
 use crate::*;
-pub fn identify_pattern(tokens: Vec<Arguement>, input: Input) {
+pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<(), Box<dyn std::error::Error>>{
     // Initialisiere Konfiguration
     let mut user_config = config_manager::manage_config();
 
@@ -11,12 +11,12 @@ pub fn identify_pattern(tokens: Vec<Arguement>, input: Input) {
     // Hilfe-Nachrichten
     if tokens.is_empty() {
         helper::print_general_help();
-        return;
+        return Ok(())
     } else if tokens.len() == 1 && tokens[0] == Arguement::HELP {
         helper::print_general_help();
-        return;
+        return Ok(())
     }
-
+    
     // Command-Verarbeitung
     match &tokens[..] {
         [Arguement::LIST] => {
@@ -35,6 +35,14 @@ pub fn identify_pattern(tokens: Vec<Arguement>, input: Input) {
         [Arguement::UPLOAD, Arguement::HELP] => {
             helper::print_upload_help();
         },
+        [Arguement::DOWNLOAD, Arguement::ALL, Arguement::FROM, Arguement::NAME(ref name)] => {
+            let mut key = None;
+            if &&user_config.username == &name {
+                println!("Info: to download your own repositories you need to specify your api key in the config");
+                key = Some(user_config.api_key);
+            }
+            git_commands::clone_all_repos(&name, key, &user_config.project_path).await?;
+        }
         [Arguement::UPLOAD, Arguement::ALL, Arguement::HELP] => {
             helper::print_upload_all_help();
         }
@@ -45,6 +53,7 @@ pub fn identify_pattern(tokens: Vec<Arguement>, input: Input) {
             throw_error(format!("{:?} is not a valid gm command. See 'gm --help'.", input.raw_input.join(" ")).as_str());
         }
     }
+    Ok(())
 }
 
 fn handle_upload_command(rest: &[Arguement], repo_list: &[Repository], repo_names_list: &[String], repo_path_list: &[String]) {

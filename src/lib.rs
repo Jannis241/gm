@@ -1,7 +1,6 @@
 #![allow(non_snake_case)]
 #![allow(unused)]
 
-use std::collections::btree_map::Range;
 use std::env;
 use std::fs::{self, File, OpenOptions};
 use std::io::{self, ErrorKind, Write};
@@ -76,7 +75,10 @@ pub enum Arguement {
     BRANCH(String)
 }
 
-
+#[derive(Deserialize)]
+struct CloneData {
+    clone_url: String
+}
 
 
 impl Input{
