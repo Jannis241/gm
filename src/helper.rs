@@ -30,17 +30,33 @@ Examples:
 
 pub fn print_upload_help() {
     println!("");
-    println!("Usage: gm upload <repo_name> [<commit_message>] [--force] [<branch_name>]
+    println!("Usage: gm upload <repo_name> [<commit_message>] [--force] [--branch=<branch_name>]
     
 Upload options:
-    <commit_message>    Optional commit message (default: 'committed by Git-Manager')
-    --force             Optional force upload changes
-    <branch_name>       Optional branch name (default: 'main')
+    <commit_message>        Optional commit message (default: 'committed by Git-Manager')
+    --force                 Optional force upload changes
+    --branch=<branch_name>  Optional branch name (default: 'main')
     
 Examples:
-    gm upload my_repo 'Initial commit' --force main
+    gm upload my_repo 'Initial commit' --force --branch=main
     gm upload my_repo --force
     gm upload my_repo 'Initial commit'
-    gm upload my_repo");
+    gm upload my_repo --branch=feature_branch
+    gm upload my_repo
+
+Extra Info:
+    Upload can also be used while you are in a repository:
+    
+    Usage: gm upload [<commit message>] [--force] [--branch=<branch_name>]
+
+    Examples:
+        gm upload
+        gm upload --force
+        gm upload 'commit message'
+
+    Note: 
+    - You have to be in a git repository otherwise you well get an error");
+
+
 
 }

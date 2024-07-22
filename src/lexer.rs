@@ -23,14 +23,13 @@ pub fn create_tokens(input: &Input) -> Vec<Arguement> {
             "save" => Arguement::SAVE,
             "from" => Arguement::FROM,
             other => {
-                if command.contains("/") {
+                if other.starts_with("--branch=") {
+                    Arguement::BRANCH(other["--branch=".len()..].to_string())
+                } else if other.contains("/") {
                     Arguement::PATH(other.to_string())
-                } 
-                else if command.contains(" ") || command.contains("' '"){
+                } else if other.contains(" ") || other.contains("' '") {
                     Arguement::MSG(other.to_string())
-                }
-                
-                else {
+                } else {
                     Arguement::NAME(other.to_string())
                 }
             }
@@ -40,3 +39,4 @@ pub fn create_tokens(input: &Input) -> Vec<Arguement> {
     }
     token_list
 }
+
