@@ -13,3 +13,6 @@
 - info -> show infos like lines of code, language, num of commits, -> like git status und cloc mix
 - auto completion für files und commands
 - bei download path angabe und . = current dir -> path ändern von erkennen ob "/" in dem token sind zu: --path="path"
+- bei download so machen dass man "own" machen kann anstatt jannis241 und wieder mit der info dass man den api key braucht
+- bei list downloaded noch den owner anzeigen
+- bei list own noch die privacy anzeigen

@@ -78,10 +78,12 @@ pub enum Arguement {
     DOWNLOADED,
     REPO,
     PUNKT,
+    EDIT,
+    CONFIG,
 }
 
 #[derive(Deserialize)]
-struct CloneData {
+pub struct CloneData {
     clone_url: String
 }
 
