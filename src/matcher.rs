@@ -43,7 +43,42 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
         [Arguement::CLEAR, Arguement::HELP] =>{
             print_clear_help();
         }
+
+       [Arguement::SET, Arguement::CONFIG, Arguement::HELP] => {
+            print_set_config_help();
+       } 
+       [Arguement::SHOW, Arguement::CONFIG, Arguement::HELP] => {
+            print_show_config_help();
+       }
+
+
         // commands
+        [Arguement::SET, Arguement::CONFIG,  Arguement::NAME(ref what_to_change), Arguement::NAME(ref change)]=>{
+            match what_to_change.as_str() {
+                "username" => {
+                    user_config.username = change.to_string();
+                    config_manager::write_to_json("./config.json", &user_config);
+                }
+                "key" => {
+                    user_config.api_key = change.to_string();
+                    config_manager::write_to_json("./config.json", &user_config);
+                }
+                "path" => {
+                    user_config.project_path = change.to_string();
+                    config_manager::write_to_json("./config.json", &user_config);
+                }
+                _ => {
+                    throw_error("invalid arguement. See 'gm set config --help'")
+                }
+            }
+        }
+        [Arguement::SHOW, Arguement::CONFIG] => {
+            println!("Username: {}", &user_config.username);
+            println!("Api-key: {}", &user_config.api_key);
+            println!("Project path: {}", &user_config.project_path);
+        }
+
+
         [Arguement::CLEAR] => terminal::clear_terminal(),
         [Arguement::LIST, Arguement::NAME(ref name)] => {
             let paths = git_commands::get_all_repos_of_user(&name, None).await;

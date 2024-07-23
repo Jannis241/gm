@@ -17,6 +17,7 @@ pub fn manage_config() -> Config{
             username: terminal::input("Username: "),
             project_path: terminal::input("Project path: "),
         };
+        
         write_to_json(&config_path, &config);
         // Write configuration to file
         //let serialized = serde_json::to_string(&config).expect("Failed to serialize config.");
@@ -29,7 +30,6 @@ pub fn manage_config() -> Config{
 pub fn write_to_json(file_path: &str, config: &Config) {
     // Convert the Config instance to JSON format
     let json = serde_json::to_string_pretty(config).expect("Failed to serialize config");
-
     // Open the file in read/write mode, creating it if it doesn't exist
     let mut file = OpenOptions::new()
         .read(true)

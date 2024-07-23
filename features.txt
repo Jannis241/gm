@@ -1,11 +1,11 @@
 - list repos from user
-- migrate
-- mirgrate all
-- show config
+- migrate -> vs code files ignorieren , git ignore file managen
+- mirgrate all -> vs code files ignoreien , git ignore file managen
+- show config 
 - edit config
 - update
 - update all
-- create repo
+- create repo-> git ignore file managen
 - delete repo
 - delete repo from pc (file)
 - update repo_list function -> repo list in die config schreiben und dann bei creations usw aktualisieren -> weniger lags
@@ -16,3 +16,4 @@
 - bei download so machen dass man "own" machen kann anstatt jannis241 und wieder mit der info dass man den api key braucht
 - bei list downloaded noch den owner anzeigen
 - bei list own noch die privacy anzeigen
+- upload wirklich mit dem api-key machen dass man uach upload kann ohne die rechte von vs code

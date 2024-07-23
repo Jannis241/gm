@@ -37,7 +37,7 @@ pub struct Repository {
     pub clone_url: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
     pub api_key: String,
     pub username: String,
@@ -80,6 +80,8 @@ pub enum Arguement {
     PUNKT,
     EDIT,
     CONFIG,
+    USERNAME(String),
+    API_KEY(String),
 }
 
 #[derive(Deserialize)]

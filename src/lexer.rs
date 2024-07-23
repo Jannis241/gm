@@ -35,6 +35,10 @@ pub fn create_tokens(input: &Input) -> Vec<Arguement> {
                     Arguement::BRANCH(other["--branch=".len()..].to_string())
                 }   else if other.starts_with("--path=") {
                     Arguement::PATH(other["--path=".len()..].to_string())
+                } else if other.starts_with("--username=") {
+                    Arguement::USERNAME(other["--username=".len()..].to_string())
+                } else if other.starts_with("--key=") {
+                    Arguement::API_KEY(other["--key=".len()..].to_string())
                 } else if other.contains(" ") || other.contains("' '") {
                     Arguement::MSG(other.to_string())
                 } else {
