@@ -1,4 +1,7 @@
 use serde_json::error;
+use reqwest::header;
+use serde::Deserialize;
+use thiserror::Error;
 
 use crate::*;
 pub fn delete_repo(repoName: &String, api_key: &String){
@@ -87,10 +90,7 @@ pub fn find_git_repos(path: &Path) -> Vec<PathBuf> {
     git_repos
 }
 
-pub fn get_repos_from_user(username: &String, api_key: Option<String>){
-    // if api key -> wants to list own repos so also private
-    // else 
-}
+
 pub fn clone_all_repos(repos: &[CloneData], target_path: String){
     for repo in repos {
         let output = Command::new("git")
@@ -108,7 +108,32 @@ pub fn clone_all_repos(repos: &[CloneData], target_path: String){
     }
 }
 
-pub async fn get_all_repos_of_user(username: &str, token: Option<String>) -> Result<Vec<CloneData>, ()> {
+
+
+
+
+#[derive(Debug, Error)]
+pub enum RepoError {
+    #[error("Network error: {0}")]
+    NetworkError(String),
+
+    #[error("Invalid API key or unauthorized access")]
+    Unauthorized,
+
+    #[error("User not found")]
+    UserNotFound,
+
+    #[error("Rate limit exceeded")]
+    RateLimitExceeded,
+
+    #[error("Unexpected server error: {0}")]
+    ServerError(String),
+
+    #[error("Failed to parse response: {0}")]
+    ParseError(String),
+}
+
+pub async fn get_all_repos_of_user(username: &str, token: Option<String>) -> Result<Vec<CloneData>, RepoError> {
     // Erstelle den Client    
     let client = reqwest::Client::new();
 
@@ -119,23 +144,29 @@ pub async fn get_all_repos_of_user(username: &str, token: Option<String>) -> Res
     let mut request = client.get(&url).header("User-Agent", "rust-github-client");
 
     if let Some(token) = token {
-        println!("Getting authorization with api-key...");
+        println!("Getting authorization with API key...");
         let auth_value = format!("token {}", token);
         request = request.header(header::AUTHORIZATION, auth_value);
     }
 
     // Sende die Anfrage
-    let response = request.send().await.expect("failed: error while sending request");
-
+    let response = request.send().await.map_err(|e| RepoError::NetworkError(e.to_string()))?;
+    
     // Überprüfe den Status der Antwort
-    if !response.status().is_success() {
-        eprintln!("Failed to fetch repos: {}", response.status());
-        return Err(());
+    match response.status() {
+        reqwest::StatusCode::OK => {
+            // Parste die JSON Antwort
+            let repos: Vec<CloneData> = response.json().await.map_err(|e| RepoError::ParseError(e.to_string()))?;
+            Ok(repos)
+        },
+        reqwest::StatusCode::UNAUTHORIZED => Err(RepoError::Unauthorized),
+        reqwest::StatusCode::NOT_FOUND => Err(RepoError::UserNotFound),
+        reqwest::StatusCode::FORBIDDEN if response.headers().get("X-RateLimit-Remaining").map_or(false, |v| v == "0") => {
+            Err(RepoError::RateLimitExceeded)
+        },
+        status if status.is_server_error() => Err(RepoError::ServerError(status.to_string())),
+        _ => Err(RepoError::NetworkError(response.status().to_string())),
     }
-    // Parste die JSON Antwort
-    let repos: Vec<CloneData> = response.json().await.expect("failed: error while getting all of the repositories");
-
-    Ok(repos)
 }
 
 pub fn extract_repo_name(clone_url: &str) -> &str {

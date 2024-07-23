@@ -23,7 +23,8 @@ pub fn create_tokens(input: &Input) -> Vec<Arguement> {
             "cls" => Arguement::CLEAR,
             "clear" => Arguement::CLEAR,
             "own" => Arguement::OWN,
-            "downloads" => Arguement::DOWNLOADS,
+            "." => Arguement::PUNKT,
+            "downloaded" => Arguement::DOWNLOADED,
             "repo" => Arguement::REPO,
             other => {
                 if other.starts_with("--branch=") {

@@ -11,6 +11,5 @@
 - update repo_list function -> repo list in die config schreiben und dann bei creations usw aktualisieren -> weniger lags
 - save (git add, git commit)
 - info -> show infos like lines of code, language, num of commits, -> like git status und cloc mix
-- bei list command unten anzeigen wie viele repos es sind
 - auto completion für files und commands
-- clear terminal (clear cls)
+- bei download path angabe und . = current dir -> path ändern von erkennen ob "/" in dem token sind zu: --path="path"

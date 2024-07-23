@@ -45,13 +45,70 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
         }
         // commands
         [Arguement::CLEAR] => terminal::clear_terminal(),
-        [Arguement::LIST, Arguement::REPO, Arguement::FROM, Arguement::NAME(ref name)] => {
-            
-        }
-        [Arguement::LIST, Arguement::OWN] => {
+        [Arguement::LIST, Arguement::NAME(ref name)] => {
+            let paths = git_commands::get_all_repos_of_user(&name, None).await;
+            match paths {
+                Ok(paths) => {
+                    let mut path_list = Vec::new();
+                    for path in paths{
+                        path_list.push(path.clone_url);
+                    }
+                    git_commands::print_repo_list(&path_list);
+                }
+                Err(RepoError::Unauthorized) => {
+                    println!("failed: you are not authorized to get these repositories. Make sure you have configured your api-key correctly")
+                }
+                Err(RepoError::NetworkError(ref value)) => {
+                    println!("failed: network error -> '{}'", value)
+                }
+                Err(RepoError::UserNotFound) => {
+                    println!("failed: user not found")
+                }
+                Err(RepoError::RateLimitExceeded) => {
+                    println!("failed: rate limit exceeded")
+                }
+                Err(RepoError::ServerError(ref e)) => {
+                    println!("failed: server error -> '{}'", e)
+                }
+                Err(RepoError::ParseError(ref e)) => {
+                    println!("failed: parse error -> '{}'", e)
+                }
+            }
 
         }
-        [Arguement::LIST, Arguement::DOWNLOADS] => {
+        [Arguement::LIST, Arguement::OWN] => {
+            let paths = git_commands::get_all_repos_of_user(&user_config.username, Some(user_config.api_key)).await;
+
+            match paths {
+                Ok(paths) => {
+                    let mut path_list = Vec::new();
+                    for path in paths{
+                        path_list.push(path.clone_url);
+                    }
+                    git_commands::print_repo_list(&path_list);
+                }
+                Err(RepoError::Unauthorized) => {
+                    println!("failed: you are not authorized to get your repositories. Make sure you have configured your api-key correctly")
+                }
+                Err(RepoError::NetworkError(ref value)) => {
+                    println!("failed: network error -> '{}'", value)
+                }
+                Err(RepoError::UserNotFound) => {
+                    println!("failed: user not found")
+                }
+                Err(RepoError::RateLimitExceeded) => {
+                    println!("failed: rate limit exceeded")
+                }
+                Err(RepoError::ServerError(ref e)) => {
+                    println!("failed: server error -> '{}'", e)
+                }
+                Err(RepoError::ParseError(ref e)) => {
+                    println!("failed: parse error -> '{}'", e)
+                }
+            }
+
+        }
+        [Arguement::LIST, Arguement::DOWNLOADED] => {
             // update repo list, names, and path in case a repo got added or deleted
             git_commands::update_repos(&mut repo_list, &mut repo_names_list, &mut repo_path_list, &user_config);
             if repo_path_list.len() == 0 {
@@ -70,8 +127,31 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
                 println!("Info: to download your own repositories you need to specify your api key in the config");
                 key = Some(user_config.api_key);
             }
-            let repos = git_commands::get_all_repos_of_user(&name, key).await.expect("failed: error while getting all of the repositories");
-            clone_all_repos(&repos, user_config.project_path);
+            let repos = git_commands::get_all_repos_of_user(&name, key).await;
+            match repos {
+                Ok(repos) => {
+                    clone_all_repos(&repos, user_config.project_path); 
+                }
+                
+                Err(RepoError::Unauthorized) => {
+                    println!("failed: you are not authorized to get these repositories. Make sure you have configured your api-key correctly")
+                }
+                Err(RepoError::NetworkError(ref value)) => {
+                    println!("failed: network error -> '{}'", value)
+                }
+                Err(RepoError::UserNotFound) => {
+                    println!("failed: user not found")
+                }
+                Err(RepoError::RateLimitExceeded) => {
+                    println!("failed: rate limit exceeded")
+                }
+                Err(RepoError::ServerError(ref e)) => {
+                    println!("failed: server error -> '{}'", e)
+                }
+                Err(RepoError::ParseError(ref e)) => {
+                    println!("failed: parse error -> '{}'", e)
+                }
+            }
         }
         [Arguement::UPLOAD, rest @ ..] => {
             handle_upload_command(rest, &repo_list, &repo_names_list, &repo_path_list);},

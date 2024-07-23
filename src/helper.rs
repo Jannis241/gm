@@ -3,13 +3,13 @@ pub fn print_list_help() {
     println!("Usage: gm list [<options>]
 
 List options:
-    list downloads      List all of your downloaded git repositories 
-    list from <user>    List all repositories from a user
+    list downloaded      List all of your downloaded git repositories 
+    list <user>         List all repositories from a user
     list own            List all of your own git repositories 
 
 Examples:
-    gm list downloads
-    gm list repo from my_friend
+    gm list downloaded
+    gm list my_friend
     gm list own
 ");
 }
