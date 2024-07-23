@@ -1,10 +1,24 @@
 pub fn print_list_help() {
     println!("");
-    println!("Usage: gm list / ls
+    println!("Usage: gm list [<options>]
 
-List all of your downloaded directory from your project directory.");
+List options:
+    list downloads      List all of your downloaded git repositories 
+    list from <user>    List all repositories from a user
+    list own            List all of your own git repositories 
+
+Examples:
+    gm list downloads
+    gm list repo from my_friend
+    gm list own
+");
 }
+pub fn print_clear_help() {
+    println!("");
+    println!("Usage: gm clear / cls
 
+Clear your current terminal.");
+}
 pub fn print_general_help() {
     println!("");
     println!("Usage: gm <command> [<args>]
@@ -14,6 +28,7 @@ Available commands:
     upload all      Upload all known repositories to git
     download        Download a specific repository from a user
     download all    Download all repositories from a user
+    clear           Clear the terminal
     list            List all downloaded repositories in your project directory
     --help          Show help about a specific command
 

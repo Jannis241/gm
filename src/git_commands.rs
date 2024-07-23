@@ -1,3 +1,5 @@
+use serde_json::error;
+
 use crate::*;
 pub fn delete_repo(repoName: &String, api_key: &String){
     println!("The user wants to delete the repo {}", repoName);
@@ -89,8 +91,24 @@ pub fn get_repos_from_user(username: &String, api_key: Option<String>){
     // if api key -> wants to list own repos so also private
     // else 
 }
+pub fn clone_all_repos(repos: &[CloneData], target_path: String){
+    for repo in repos {
+        let output = Command::new("git")
+            .arg("clone")
+            .arg(&repo.clone_url)
+            .arg(format!("{}/{}", target_path, extract_repo_name(&repo.clone_url)))
+            .output()
+            .expect("Failed to execute git command");
 
-pub async fn clone_all_repos(username: &str, token: Option<String>, target_path: &str) -> Result<(), Box<dyn std::error::Error>> {
+        if !output.status.success() {
+            eprintln!("Failed to clone repo: {}", repo.clone_url);
+        } else {
+            println!("Successfully cloned: {}", repo.clone_url);
+        }
+    }
+}
+
+pub async fn get_all_repos_of_user(username: &str, token: Option<String>) -> Result<Vec<CloneData>, ()> {
     // Erstelle den Client    
     let client = reqwest::Client::new();
 
@@ -107,33 +125,17 @@ pub async fn clone_all_repos(username: &str, token: Option<String>, target_path:
     }
 
     // Sende die Anfrage
-    let response = request.send().await?;
+    let response = request.send().await.expect("failed: error while sending request");
 
     // Überprüfe den Status der Antwort
     if !response.status().is_success() {
         eprintln!("Failed to fetch repos: {}", response.status());
-        return Ok(());
+        return Err(());
     }
     // Parste die JSON Antwort
-    let repos: Vec<CloneData> = response.json().await?;
+    let repos: Vec<CloneData> = response.json().await.expect("failed: error while getting all of the repositories");
 
-    // Klone jedes Repository
-    for repo in repos {
-        let output = Command::new("git")
-            .arg("clone")
-            .arg(&repo.clone_url)
-            .arg(format!("{}/{}", target_path, extract_repo_name(&repo.clone_url)))
-            .output()
-            .expect("Failed to execute git command");
-
-        if !output.status.success() {
-            eprintln!("Failed to clone repo: {}", repo.clone_url);
-        } else {
-            println!("Successfully cloned: {}", repo.clone_url);
-        }
-    }
-
-    Ok(())
+    Ok(repos)
 }
 
 pub fn extract_repo_name(clone_url: &str) -> &str {
@@ -171,7 +173,9 @@ pub fn print_repo_list(repo_paths: &Vec<String>) {
         
         println!("{}{}", cleanPathSplit[0..cleanPathSplit.len() - 2].join("").italic(), cleanPathSplit.last().unwrap().blue().italic().bold());
     }
-    println!("")
+    println!("");
+    println!("Found {} repositories", repo_paths.len().to_string().blue());
+    
 }
 
 

@@ -1,3 +1,5 @@
+use env::consts::ARCH;
+
 use crate::*;
 
 
@@ -38,10 +40,18 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
         [Arguement::UPLOAD, Arguement::ALL, Arguement::HELP] => {
             helper::print_upload_all_help();
         }
-        
+        [Arguement::CLEAR, Arguement::HELP] =>{
+            print_clear_help();
+        }
         // commands
         [Arguement::CLEAR] => terminal::clear_terminal(),
-        [Arguement::LIST] => {
+        [Arguement::LIST, Arguement::REPO, Arguement::FROM, Arguement::NAME(ref name)] => {
+            
+        }
+        [Arguement::LIST, Arguement::OWN] => {
+
+        }
+        [Arguement::LIST, Arguement::DOWNLOADS] => {
             // update repo list, names, and path in case a repo got added or deleted
             git_commands::update_repos(&mut repo_list, &mut repo_names_list, &mut repo_path_list, &user_config);
             if repo_path_list.len() == 0 {
@@ -60,7 +70,8 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
                 println!("Info: to download your own repositories you need to specify your api key in the config");
                 key = Some(user_config.api_key);
             }
-            git_commands::clone_all_repos(&name, key, &user_config.project_path).await?;
+            let repos = git_commands::get_all_repos_of_user(&name, key).await.expect("failed: error while getting all of the repositories");
+            clone_all_repos(&repos, user_config.project_path);
         }
         [Arguement::UPLOAD, rest @ ..] => {
             handle_upload_command(rest, &repo_list, &repo_names_list, &repo_path_list);},

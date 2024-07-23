@@ -74,6 +74,9 @@ pub enum Arguement {
     FROM,
     BRANCH(String),
     CLEAR,
+    OWN,
+    DOWNLOADS,
+    REPO,
 }
 
 #[derive(Deserialize)]
