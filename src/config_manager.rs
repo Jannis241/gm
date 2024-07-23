@@ -3,12 +3,10 @@ pub fn manage_config() -> Config{
     let config_path = "./config.json";
     let path = Path::new(&config_path);
 
-    let mut config: Config;
-
     if path.exists() {
         // Read existing configuration from file
         let file = File::open(&path).expect("Failed to open config file.");
-        config = serde_json::from_reader(file).expect("Failed to parse config file.");
+        let config = serde_json::from_reader(file).expect("Failed to parse config file.");
         config
     } else {
         // Prompt user for configuration input

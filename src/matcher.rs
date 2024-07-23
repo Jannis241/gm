@@ -1,9 +1,4 @@
-use env::consts::ARCH;
-
 use crate::*;
-
-
-
 
 pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<(), Box<dyn std::error::Error>>{
     // Initialisiere Konfiguration
@@ -221,14 +216,6 @@ fn handle_upload_command(rest: &[Arguement], repo_list: &[Repository], repo_name
     }
 
     if is_current_dir_git_repository && invalid_args.is_empty() {
-        // Wenn im aktuellen Verzeichnis und keine ungültigen Argumente
-
-        // Find the repository name based on the current directory
-        let repo_name = repo_list.iter()
-            .find(|repo| repo.Path == current_dir_str)
-            .map(|repo| &repo.Name)
-            .expect("Repository not found for the current directory");
-
         git_commands::upload(&current_dir_str, &commit_message, force, branch_name);
         return;
     }

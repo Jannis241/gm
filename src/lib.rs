@@ -1,16 +1,17 @@
+#![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(unused)]
 
-use std::env;
 use std::fs::{self, File, OpenOptions};
-use std::io::{self, ErrorKind, Write};
-use std::path::{MAIN_SEPARATOR, Path, PathBuf};
+use std::io::{self, Write};
+use std::path::{Path, PathBuf};
 use std::process::{exit, Command};
+use std::env;
 
-use colored::*;
-use reqwest::header::{self, ValueDrain};
-use reqwest::Error;
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
+use reqwest::header;
+use colored::*;
 
 // Declare the modules
 pub mod config_manager;
@@ -27,8 +28,6 @@ pub use helper::*;
 pub use lexer::*;
 pub use matcher::*;
 pub use terminal::*;
-
-
 
 #[derive(Deserialize)]
 pub struct Repository {
