@@ -1,11 +1,10 @@
 pub fn print_config_help(){
-    println!("
-Config options:
+    println!("Config options:
 
     set config      Change your configuration settings
     show config     Display the current configuration settings 
     
-    See 'gm set config --help' and 'gm show config --help' for more info
+    See 'gm <option> --help' for more info
     ")
 }
 

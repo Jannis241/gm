@@ -13,4 +13,8 @@ Cargo.lock
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
+# dont upload private config
 config.json
+
+# debug shell script
+s.sh 
