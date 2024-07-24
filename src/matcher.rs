@@ -68,9 +68,9 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
             }
         }
         [Arguement::SHOW, Arguement::CONFIG] => {
-            println!("Username: {}", &user_config.username);
-            println!("Api-key: {}", &user_config.api_key);
-            println!("Project path: {}", &user_config.project_path);
+            println!("{}: {}", "Username".blue().underline(),&user_config.username);
+            println!("{}: {}", "Api-Key".blue().underline(),&user_config.api_key);
+            println!("{}: {}", "Project path".blue().underline(), &user_config.project_path);
         }
 
 
