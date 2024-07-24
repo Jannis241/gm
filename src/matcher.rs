@@ -1,3 +1,5 @@
+use env::consts::{ARCH, EXE_SUFFIX};
+
 use crate::*;
 
 pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<(), Box<dyn std::error::Error>>{
@@ -21,11 +23,13 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
     // Command-Verarbeitung
     match &tokens[..] {
         // help 
+        [Arguement::CONFIG, Arguement::HELP] => print_config_help(),
         [Arguement::LIST, Arguement::HELP] => {
             helper::print_list_help();
         }
         [Arguement::UPLOAD, Arguement::HELP] => {
-            helper::print_upload_help();},
+            helper::print_upload_help();
+        }
         [Arguement::DOWNLOAD, Arguement::ALL, Arguement::HELP] => {
             print_download_all_help();
         }
@@ -38,11 +42,10 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
         [Arguement::CLEAR, Arguement::HELP] =>{
             print_clear_help();
         }
-
-       [Arguement::SET, Arguement::CONFIG, Arguement::HELP] => {
+        [Arguement::SET, Arguement::CONFIG, Arguement::HELP] => {
             print_set_config_help();
        } 
-       [Arguement::SHOW, Arguement::CONFIG, Arguement::HELP] => {
+        [Arguement::SHOW, Arguement::CONFIG, Arguement::HELP] => {
             print_show_config_help();
        }
 
@@ -86,8 +89,8 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
                     git_commands::print_repo_list(&path_list);
                 }
                 Err(RepoError::Unauthorized) => {
-                    println!("failed: you are not authorized to get these repositories. Make sure you have configured your api-key correctly")
-                }
+                    println!("failed: you are not authorized to get these repositories. Make sure you have configured your api-key correctly");
+                    println!("See 'gm config --help' for more info");                }
                 Err(RepoError::NetworkError(ref value)) => {
                     println!("failed: network error -> '{}'", value)
                 }
@@ -118,8 +121,8 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
                     git_commands::print_repo_list(&path_list);
                 }
                 Err(RepoError::Unauthorized) => {
-                    println!("failed: you are not authorized to get your repositories. Make sure you have configured your api-key correctly")
-                }
+                    println!("failed: you are not authorized to get these repositories. Make sure you have configured your api-key correctly");
+                    println!("See 'gm config --help' for more info");                }
                 Err(RepoError::NetworkError(ref value)) => {
                     println!("failed: network error -> '{}'", value)
                 }
@@ -164,7 +167,8 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
                 }
                 
                 Err(RepoError::Unauthorized) => {
-                    println!("failed: you are not authorized to get these repositories. Make sure you have configured your api-key correctly")
+                    println!("failed: you are not authorized to get these repositories. Make sure you have configured your api-key correctly");
+                    println!("See 'gm config --help'");
                 }
                 Err(RepoError::NetworkError(ref value)) => {
                     println!("failed: network error -> '{}'", value)
@@ -183,6 +187,9 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
                 }
             }
         }
+        [Arguement::UPLOAD, Arguement::ALL, rest @ ..] => {
+            handle_upload_all_command(rest, &repo_list, &repo_names_list, &repo_path_list);
+        }
         [Arguement::UPLOAD, rest @ ..] => {
             handle_upload_command(rest, &repo_list, &repo_names_list, &repo_path_list);},
         _ => {
@@ -193,6 +200,23 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
 }
 
 
+fn handle_upload_all_command(rest: &[Arguement], repo_list: &[Repository], repo_names_list: &[String], repo_path_list: &[String]){
+    let mut force = false;
+    if !rest.is_empty(){
+        match rest[..] { 
+            [Arguement::FORCE] => force = true,
+            _ => {
+                throw_error("invalid arguement. See 'gm upload all --help'");
+                exit(0)
+            }
+        }
+
+    }
+
+    for repo in repo_list {
+        git_commands::upload(&repo.Path, &"committed by Git-Manager".to_string(), force, "main".to_string())
+    }
+}
 
 
 fn handle_upload_command(rest: &[Arguement], repo_list: &[Repository], repo_names_list: &[String], repo_path_list: &[String]) {
@@ -203,90 +227,63 @@ fn handle_upload_command(rest: &[Arguement], repo_list: &[Repository], repo_name
     let mut commit_message = "committed by Git-Manager".to_string();
     let mut force = false;
     let mut branch_name = "main".to_string();
-    let mut invalid_args = vec![];
+    let mut repo_path = String::new();
+    
+    if rest.is_empty() {
+        throw_error("missing arguements. See 'gm upload --help'");
+        exit(0)
+    }
 
-    // Verarbeite Argumente vor dem eigentlichen Match
-    for token in rest {
-        match token {
-            Arguement::FORCE => force = true,
-            Arguement::MSG(msg) => commit_message = msg.clone(),
-            Arguement::BRANCH(branch) => branch_name = branch.clone(),
-            _ => invalid_args.push(format!("{:?}", token)),
+    // <name> <msg> <branch> <force>
+
+    // get path
+    match rest[0] {
+        Arguement::NAME(ref repo_name) => {
+            let repo = get_repo_path_by_name(repo_name, repo_list);
+            match repo {
+                Some(path) => repo_path = path,
+                None => {
+                    throw_error("Repository not found. See 'gm list downloaded'");
+                    println!("Note: make sure you have configured your project path correctly. See 'gm config --help'");
+                    exit(0)
+                }
+            }
+
         }
-    }
-
-    if is_current_dir_git_repository && invalid_args.is_empty() {
-        git_commands::upload(&current_dir_str, &commit_message, force, branch_name);
-        return;
-    }
-
-    if rest.is_empty() && !is_current_dir_git_repository {
-        throw_error("Missing repository name. See 'gm upload --help'.");
-        exit(0);
-    }
-
-    match rest {
-        [Arguement::NAME(ref name), rest @ ..] => {
-            let mut commit_message = "committed by Git-Manager".to_string();
-            let mut force = false;
-            let mut branch_name = "main".to_string();
-            let mut invalid_args = vec![];
-
-            for token in rest {
-                match token {
-                    Arguement::FORCE => force = true,
-                    Arguement::MSG(msg) => commit_message = msg.clone(),
-                    Arguement::BRANCH(branch) => branch_name = branch.clone(),
-                    _ => invalid_args.push(format!("{:?}", token)),
-                }
+        Arguement::PUNKT => {
+            if repo_path_list.contains(&current_dir_str){
+                repo_path = current_dir_str;
             }
-
-            if !invalid_args.is_empty() {
-                throw_error(format!("Invalid Arguments. See 'gm upload --help'.").as_str());
-                exit(0);
+            else {
+                throw_error("You are currently not in a known repository. See 'gm list downloaded'");
+                println!("Note: make sure you have configured your project path correctly. See 'gm config --help'");
+                exit(0)
             }
-
-            if !repo_names_list.contains(&name.to_string()) {
-                throw_error(format!("Repository '{}' not found. See 'gm list'.", &name).as_str());
-                exit(0);
-            }
-
-            for repo in repo_list {
-                if &repo.Name == name {
-                    git_commands::upload(&repo.Path, &commit_message, force, branch_name.clone());
-                }
-            }
-        },
-
-        [Arguement::ALL, rest @ ..] => {
-            let mut commit_message = "committed by Git-Manager".to_string();
-            let mut force = false;
-            let mut branch_name = "main".to_string();
-            let mut invalid_args = vec![];
-
-            for token in rest {
-                match token {
-                    Arguement::FORCE => force = true,
-                    Arguement::MSG(msg) => commit_message = msg.clone(),
-                    Arguement::BRANCH(branch) => branch_name = branch.clone(),
-                    _ => invalid_args.push(format!("{:?}", token)),
-                }
-            }
-
-            if !invalid_args.is_empty() {
-                throw_error(format!("Invalid Arguments. See 'gm upload all --help'.").as_str());
-                exit(0);
-            }
-
-            for repo in repo_list {
-                git_commands::upload(&repo.Path, &commit_message, force, branch_name.clone());
-            }
-        },
-
+        }
         _ => {
-            throw_error("Invalid upload arguements. See 'gm upload --help'.");
-            exit(0);
+            throw_error("missing repository name. See 'gm upload --help'")
         }
     }
+    for arg in &rest[1..]{
+        match arg{
+            Arguement::FORCE => force = true,
+            Arguement::NAME(msg) => {
+                if commit_message == "committed by Git-Manager".to_string() {
+                    commit_message = msg.to_string();
+                }
+                else {
+                    throw_error("cant assign commit message twice. See 'gm upload --help'");
+                    exit(0);
+                }
+            }
+            Arguement::BRANCH(name) => branch_name = name.to_string(),
+            _ => {
+                throw_error("Invalid arguement. See 'gm upload --help'");
+                exit(0)
+            }
+        }
+    }
+    git_commands::upload(&repo_path, &commit_message, force, branch_name);
+
 }
-// Weitere Helper-Funktionen und Typen hier ...
+

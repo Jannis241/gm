@@ -1,3 +1,14 @@
+pub fn print_config_help(){
+    println!("
+Config options:
+
+    set config      Change your configuration settings
+    show config     Display the current configuration settings 
+    
+    See 'gm set config --help' and 'gm show config --help' for more info
+    ")
+}
+
 pub fn print_list_help() {
     println!("");
     println!("Usage: gm list [<options>]
@@ -106,7 +117,7 @@ pub fn print_upload_help() {
 Upload options:
     <commit_message>        Optional commit message (default: 'committed by Git-Manager')
     --force                 Forcefully upload changes, overwriting if necessary
-    --branch=<branch_name>  Specify the branch to upload changes to (default: 'main')
+    --branch=<branch_name>  Specify the branch to upload changes to (default = 'main')
     
 Examples:
     gm upload my_repo 'Initial commit' --force --branch=main
@@ -116,19 +127,20 @@ Examples:
     gm upload my_repo
 
 Extra Info:
-    - if you dont specify a branch it will commit to 'main'
-    - If you are in a git repository directory, you can also use:
+    If you are in a git repository directory, you can also use:
     
-    Usage: gm upload [<commit message>] [--force] [--branch=<branch_name>]
+    Usage: gm upload . [<commit message>] [--force] [--branch=<branch_name>]
 
     Examples:
-        gm upload
-        gm upload --force
-        gm upload 'commit message'
-        gm upload --branch=test_branch
+        gm upload . 
+        gm upload . --force
+        gm upload . 'commit message'
+        gm upload . --branch=test_branch
 
     Note: 
     - Ensure you are in a valid git repository directory or specify a repository name.
+    - Make sure to you have configured your project path correctly. See 'gm show config' or 'gm set config --help'
+    - You can check your downloaded repositories with 'gm list downloaded'
 ");
 }
 

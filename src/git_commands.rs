@@ -6,6 +6,16 @@ pub fn delete_repo(repoName: &String, api_key: &String){
     println!("The user wants to delete the repo {}", repoName);
 }
 
+pub fn get_repo_path_by_name(name: &String, repoList: &[Repository]) -> Option<String> {
+    let mut repoPath = None;
+    for repo in repoList {
+        if &repo.Name == name {
+            repoPath = Some(repo.Path.clone());
+        }
+    }
+    repoPath
+}
+
 pub fn delete_branch(repoName: &String, branchName: &String, api_key: &String){
     println!("the user wants to delete the branch {} from the repo {}", branchName, repoName);
 }
