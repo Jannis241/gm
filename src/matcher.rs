@@ -54,7 +54,7 @@ pub async fn identify_pattern(tokens: Vec<Arguement>, input: Input) -> Result<()
         [Arguement::SET, Arguement::CONFIG,  Arguement::NAME(ref what_to_change), Arguement::NAME(ref change)]=>{
             match what_to_change.as_str() {
                 "username" => {
-                    user_config.username = change.to_string();
+                    user_config.username = change.into();
                     config_manager::write_to_json("./config.json", &user_config);
                 }
                 "key" => {
